@@ -139,6 +139,36 @@
             display: none;
         }
     </style>
+
+    <script>
+        function submitToGoogleForm() {
+            // Collect data from your form or application
+            var program = document.getElementById('program').value;
+            var mbti = document.getElementById('mbti').value;
+            var timestamp = new Date().toISOString();
+
+            // Create a form data object
+            var formData = new FormData();
+            formData.append('entry.573486325', program);
+            formData.append('entry.375727484', mbti);
+            formData.append('entry.1263229797', timestamp);
+
+            // Send the data to Google Form
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'https://docs.google.com/forms/u/0/d/e/12nk0OeColMiBfeOlG3eQEe-sgMeL5veZEta7oYLT778/formResponse', true);
+            xhr.setRequestHeader('Accept', 'application/xml, text/xml, */*; q=0.01');
+            xhr.send(formData);
+
+            // Optionally, handle the response or update the UI
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    console.log('Data submitted successfully');
+                } else {
+                    console.error('Error submitting data');
+                }
+            };
+        }
+    </script>
 </head>
 <body class="min-h-screen py-8 px-4">
     <!-- Hong Kong Cultural Background Elements -->
@@ -809,34 +839,15 @@
                 showResults(mbtiParam);
             }
         });
-
-        // Google Form 的提交 URL
-        const GOOGLE_FORM_ACTION_URL = 'https://docs.google.com/forms/u/0/d/e/12nk0OeColMiBfeOlG3eQEe-sgMeL5veZEta7oYLT778/formResponse';
-        // 監聽「查看結果」按鈕點擊事件
-        document.getElementById('viewResultBtn').addEventListener('click', function() {
-        // TODO: 請將以下變數替換成你測試結果的實際值
-        const programValue = '你的測試節目結果';  // 例如：用戶選擇的文化活動結果
-        const mbtiValue = '你的MBTI結果';          // 例如：用戶的MBTI性格結果
-        const timestampValue = new Date().toISOString(); // 送出當下的時間
-
-        // 建立 FormData，對應 Google Form 的 entry ID
-        const formData = new FormData();
-        formData.append('entry.573486325', programValue);   // form-program
-        formData.append('entry.375727484', mbtiValue);      // form-mbti
-        formData.append('entry.1263229797', timestampValue);// form-timestamp
-
-        // 送出 POST 請求到 Google Form
-        fetch(GOOGLE_FORM_ACTION_URL, {
-        method: 'POST',
-        mode: 'no-cors', // 避免跨域錯誤，無法取得回應
-        body: formData
-        }).then(() => {
-        alert('資料已成功送出！');
-        }).catch(() => {
-        alert('資料送出失敗，請稍後再試。');
-        });
-      });
- 
     </script>
+
+     <form id="myForm">
+        <label for="program">Program:</label>
+        <input type="text" id="program" name="program"><br><br>
+        <label for="mbti">MBTI:</label>
+        <input type="text" id="mbti" name="mbti"><br><br>
+        <button type="button" onclick="submitToGoogleForm()">查看結果</button>
+    </form>
+    
 </body>
 </html>
