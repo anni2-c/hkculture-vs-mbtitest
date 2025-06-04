@@ -1,253 +1,842 @@
 <!DOCTYPE html>
 <html lang="zh-HK">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>香港文化 × MBTI 性格測試</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@400;500;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <style>
-    body {
-      font-family: 'Noto Sans HK', sans-serif;
-      background-color: #ffecec;
-      position: relative;
-      overflow-x: hidden;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>香港文化 × MBTI 性格測試</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+HK:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Noto Sans HK', sans-serif;
+            background-color: #ffecec;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Hong Kong cultural background elements */
+        .hk-bg-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .hk-element {
+            position: absolute;
+            opacity: 0.15; /* Increased opacity from 0.07 */
+        }
+        
+        .quiz-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .option-card {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .option-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.2);
+            border-color: #ff6b6b;
+        }
+        
+        .option-card.selected {
+            border-color: #ff6b6b;
+            background-color: #fff0f0;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            border-radius: 5px;
+            background-color: #ffe0e0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: #ff6b6b;
+            transition: width 0.5s ease;
+        }
+        
+        .btn-primary {
+            background-color: #ff6b6b;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: #ff5252;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+        
+        .result-card {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(255, 107, 107, 0.3);
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ff6b6b;
+            opacity: 0;
+        }
+        
+        .share-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .share-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            white-space: nowrap;
+            margin-bottom: 8px;
+            pointer-events: none;
+        }
+        
+        .tooltip:after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
 
-    .hk-bg-elements {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      pointer-events: none;
-    }
-
-    .hk-element {
-      position: absolute;
-      opacity: 0.15;
-    }
-
-    .quiz-container {
-      background-color: rgba(255, 255, 255, 0.9);
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(255, 107, 107, 0.2);
-      position: relative;
-      z-index: 1;
-    }
-
-    .option-card {
-      transition: all 0.3s ease;
-      border: 2px solid transparent;
-    }
-
-    .option-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 20px rgba(255, 107, 107, 0.2);
-      border-color: #ff6b6b;
-    }
-
-    .option-card.selected {
-      border-color: #ff6b6b;
-      background-color: #fff0f0;
-    }
-
-    .progress-bar {
-      height: 10px;
-      border-radius: 5px;
-      background-color: #ffe0e0;
-      overflow: hidden;
-    }
-
-    .progress {
-      height: 100%;
-      background-color: #ff6b6b;
-      transition: width 0.5s ease;
-    }
-
-    .btn-primary {
-      background-color: #ff6b6b;
-      transition: all 0.3s ease;
-    }
-
-    .btn-primary:hover {
-      background-color: #ff5252;
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
-    }
-
-    .result-card {
-      border-radius: 15px;
-      box-shadow: 0 10px 30px rgba(255, 107, 107, 0.2);
-      transition: all 0.3s ease;
-    }
-
-    .result-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 15px 35px rgba(255, 107, 107, 0.3);
-    }
-
-    .confetti {
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      background-color: #ff6b6b;
-      opacity: 0;
-    }
-
-    .share-btn {
-      transition: all 0.3s ease;
-    }
-
-    .share-btn:hover {
-      transform: translateY(-2px);
-    }
-
-    .tooltip {
-      position: absolute;
-      bottom: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #333;
-      color: white;
-      padding: 5px 10px;
-      border-radius: 5px;
-      font-size: 14px;
-      opacity: 0;
-      transition: opacity 0.3s;
-      white-space: nowrap;
-      margin-bottom: 8px;
-      pointer-events: none;
-    }
-
-    .tooltip:after {
-      content: '';
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      border-width: 5px;
-      border-style: solid;
-      border-color: #333 transparent transparent transparent;
-    }
-  </style>
+        /* Hide the form initially */
+        #hidden-form {
+            display: none;
+        }
+    </style>
 </head>
 <body class="min-h-screen py-8 px-4">
-  <!-- Hong Kong Cultural Background Elements -->
-  <div class="hk-bg-elements">
-    <!-- 這裡省略了 SVG 背景圖案，請保留原始檔案中的 SVG 區塊 -->
-  </div>
-
-  <div class="max-w-3xl mx-auto quiz-container p-6 md:p-8">
-    <!-- Title Section -->
-    <div id="title-section" class="text-center mb-8">
-      <h1 class="text-3xl md:text-4xl font-black text-red-500 mb-2">香港文化 × MBTI 性格測試</h1>
-      <h2 class="text-xl md:text-2xl font-bold text-red-400 mb-6">測試你適合哪種香港傳統文化活動？</h2>
-      <p class="text-gray-600 mb-8">透過 5 道情境題，發掘最適合你性格的香港傳統文化體驗！</p>
-      <button id="start-btn" class="btn-primary text-white font-bold py-3 px-8 rounded-full text-lg">開始測試</button>
+    <!-- Hong Kong Cultural Background Elements -->
+    <div class="hk-bg-elements">
+        <!-- Traditional Chinese Gate -->
+        <svg class="hk-element" style="top: 5%; left: 5%; width: 180px;" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10,90 L10,40 L90,40 L90,90" stroke="#ff6b6b" stroke-width="3"/>
+            <path d="M5,40 L95,40" stroke="#ff6b6b" stroke-width="3"/>
+            <path d="M15,40 L15,30 L85,30 L85,40" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M20,30 L20,20 L80,20 L80,30" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M25,20 L25,10 L75,10 L75,20" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M40,90 L40,50" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M60,90 L60,50" stroke="#ff6b6b" stroke-width="2"/>
+        </svg>
+        
+        <!-- Dragon Boat -->
+        <svg class="hk-element" style="top: 70%; left: 80%; width: 200px;" viewBox="0 0 100 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5,15 C15,5 85,5 95,15" stroke="#ff6b6b" stroke-width="2" fill="none"/>
+            <path d="M5,15 C15,25 85,25 95,15" stroke="#ff6b6b" stroke-width="2" fill="none"/>
+            <path d="M95,15 L100,10" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M95,15 L100,20" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M5,15 L0,10" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M5,15 L0,20" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M20,15 L20,5" stroke="#ff6b6b" stroke-width="1"/>
+            <path d="M40,15 L40,5" stroke="#ff6b6b" stroke-width="1"/>
+            <path d="M60,15 L60,5" stroke="#ff6b6b" stroke-width="1"/>
+            <path d="M80,15 L80,5" stroke="#ff6b6b" stroke-width="1"/>
+        </svg>
+        
+        <!-- Dim Sum -->
+        <svg class="hk-element" style="top: 30%; left: 85%; width: 100px;" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="30" stroke="#ff6b6b" stroke-width="2"/>
+            <circle cx="50" cy="50" r="25" stroke="#ff6b6b" stroke-width="1"/>
+            <path d="M35,40 L65,40" stroke="#ff6b6b" stroke-width="1"/>
+            <path d="M35,50 L65,50" stroke="#ff6b6b" stroke-width="1"/>
+            <path d="M35,60 L65,60" stroke="#ff6b6b" stroke-width="1"/>
+            <path d="M50,20 L50,10" stroke="#ff6b6b" stroke-width="2"/>
+        </svg>
+        
+        <!-- Lion Dance Head -->
+        <svg class="hk-element" style="top: 15%; left: 75%; width: 150px;" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20,80 C20,50 80,50 80,80" stroke="#ff6b6b" stroke-width="3" fill="none"/>
+            <path d="M20,80 L80,80" stroke="#ff6b6b" stroke-width="3"/>
+            <path d="M30,50 C30,30 70,30 70,50" stroke="#ff6b6b" stroke-width="3" fill="none"/>
+            <circle cx="40" cy="40" r="5" stroke="#ff6b6b" stroke-width="2"/>
+            <circle cx="60" cy="40" r="5" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M50,50 L50,60" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M40,65 C40,70 60,70 60,65" stroke="#ff6b6b" stroke-width="2" fill="none"/>
+        </svg>
+        
+        <!-- Hong Kong Skyline -->
+        <svg class="hk-element" style="bottom: 5%; left: 0; width: 100%;" viewBox="0 0 800 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,100 L0,70 L20,70 L20,40 L40,40 L40,60 L50,60 L50,30 L60,30 L60,50 L80,50 L80,20 L100,20 L100,60 L120,60 L120,40 L140,40 L140,70 L160,70 L160,50 L180,50 L180,30 L200,30 L200,60 L220,60 L220,40 L240,40 L240,20 L260,20 L260,50 L280,50 L280,70 L300,70 L300,40 L320,40 L320,60 L340,60 L340,30 L360,30 L360,50 L380,50 L380,20 L400,20 L400,10 L420,10 L420,40 L440,40 L440,60 L460,60 L460,30 L480,30 L480,50 L500,50 L500,20 L520,20 L520,60 L540,60 L540,40 L560,40 L560,70 L580,70 L580,50 L600,50 L600,30 L620,30 L620,60 L640,60 L640,40 L660,40 L660,20 L680,20 L680,50 L700,50 L700,70 L720,70 L720,40 L740,40 L740,60 L760,60 L760,30 L780,30 L780,50 L800,50 L800,100 Z" stroke="#ff6b6b" stroke-width="2" fill="none"/>
+        </svg>
+        
+        <!-- Bauhinia Flower (Hong Kong Emblem) -->
+        <svg class="hk-element" style="top: 60%; left: 10%; width: 120px;" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M50,10 C60,30 80,40 90,50 C80,60 60,70 50,90 C40,70 20,60 10,50 C20,40 40,30 50,10 Z" stroke="#ff6b6b" stroke-width="2" fill="none"/>
+            <path d="M50,20 C57,35 73,42 80,50 C73,58 57,65 50,80 C43,65 27,58 20,50 C27,42 43,35 50,20 Z" stroke="#ff6b6b" stroke-width="1" fill="none"/>
+            <circle cx="50" cy="50" r="5" stroke="#ff6b6b" stroke-width="1"/>
+        </svg>
+        
+        <!-- Chinese Lantern -->
+        <svg class="hk-element" style="top: 20%; left: 20%; width: 80px;" viewBox="0 0 60 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M30,10 L30,20" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M20,20 C20,20 30,15 40,20" stroke="#ff6b6b" stroke-width="2" fill="none"/>
+            <path d="M15,20 C15,50 15,70 15,80" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M45,20 C45,50 45,70 45,80" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M15,20 C15,20 30,25 45,20" stroke="#ff6b6b" stroke-width="2" fill="none"/>
+            <path d="M15,40 C15,40 30,45 45,40" stroke="#ff6b6b" stroke-width="1" fill="none"/>
+            <path d="M15,60 C15,60 30,65 45,60" stroke="#ff6b6b" stroke-width="1" fill="none"/>
+            <path d="M15,80 C15,80 30,85 45,80" stroke="#ff6b6b" stroke-width="2" fill="none"/>
+            <path d="M30,80 L30,90" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M25,90 L35,90" stroke="#ff6b6b" stroke-width="2"/>
+        </svg>
+        
+        <!-- Junk Boat -->
+        <svg class="hk-element" style="top: 40%; left: 40%; width: 150px;" viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10,40 L90,40" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M20,40 L20,20" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M20,20 L50,10" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M50,10 L50,40" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M20,20 L20,10 L50,10" stroke="#ff6b6b" stroke-width="1"/>
+            <path d="M10,40 C10,40 20,50 50,50 C80,50 90,40 90,40" stroke="#ff6b6b" stroke-width="2" fill="none"/>
+            <path d="M50,10 L80,20" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M80,20 L80,40" stroke="#ff6b6b" stroke-width="2"/>
+        </svg>
+        
+        <!-- NEW: Tram -->
+        <svg class="hk-element" style="top: 25%; left: 60%; width: 120px;" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="20" width="60" height="80" stroke="#ff6b6b" stroke-width="2"/>
+            <rect x="25" y="30" width="50" height="15" stroke="#ff6b6b" stroke-width="1"/>
+            <rect x="25" y="50" width="50" height="15" stroke="#ff6b6b" stroke-width="1"/>
+            <rect x="25" y="70" width="50" height="15" stroke="#ff6b6b" stroke-width="1"/>
+            <circle cx="30" cy="105" r="5" stroke="#ff6b6b" stroke-width="1"/>
+            <circle cx="70" cy="105" r="5" stroke="#ff6b6b" stroke-width="1"/>
+            <path d="M20,100 L80,100" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M40,10 L60,10 L60,20 L40,20 Z" stroke="#ff6b6b" stroke-width="1"/>
+        </svg>
+        
+        <!-- NEW: Egg Waffle -->
+        <svg class="hk-element" style="top: 65%; left: 25%; width: 100px;" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20,20 C20,20 50,80 80,20" stroke="#ff6b6b" stroke-width="2" fill="none"/>
+            <circle cx="30" cy="30" r="8" stroke="#ff6b6b" stroke-width="1"/>
+            <circle cx="50" cy="30" r="8" stroke="#ff6b6b" stroke-width="1"/>
+            <circle cx="70" cy="30" r="8" stroke="#ff6b6b" stroke-width="1"/>
+            <circle cx="40" cy="45" r="8" stroke="#ff6b6b" stroke-width="1"/>
+            <circle cx="60" cy="45" r="8" stroke="#ff6b6b" stroke-width="1"/>
+            <circle cx="30" cy="60" r="8" stroke="#ff6b6b" stroke-width="1"/>
+            <circle cx="50" cy="60" r="8" stroke="#ff6b6b" stroke-width="1"/>
+            <circle cx="70" cy="60" r="8" stroke="#ff6b6b" stroke-width="1"/>
+        </svg>
+        
+        <!-- NEW: Milk Tea -->
+        <svg class="hk-element" style="top: 50%; left: 75%; width: 80px;" viewBox="0 0 60 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15,30 L15,90 C15,95 45,95 45,90 L45,30" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M10,30 L50,30" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M20,30 L20,15 C20,10 40,10 40,15 L40,30" stroke="#ff6b6b" stroke-width="1"/>
+            <path d="M15,50 L45,50" stroke="#ff6b6b" stroke-width="1" stroke-dasharray="2,2"/>
+            <path d="M25,20 L35,20" stroke="#ff6b6b" stroke-width="1"/>
+        </svg>
+        
+        <!-- NEW: Temple -->
+        <svg class="hk-element" style="top: 10%; left: 40%; width: 150px;" viewBox="0 0 120 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20,90 L100,90" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M30,90 L30,60" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M90,90 L90,60" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M30,60 L90,60" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M40,60 L40,40" stroke="#ff6b6b" stroke-width="1"/>
+            <path d="M60,60 L60,40" stroke="#ff6b6b" stroke-width="1"/>
+            <path d="M80,60 L80,40" stroke="#ff6b6b" stroke-width="1"/>
+            <path d="M20,40 L100,40" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M60,10 L20,40" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M60,10 L100,40" stroke="#ff6b6b" stroke-width="2"/>
+            <path d="M50,30 L70,30" stroke="#ff6b6b" stroke-width="1"/>
+        </svg>
     </div>
 
-    <!-- Quiz Section -->
-    <div id="quiz-section" class="hidden">
-      <div class="mb-6">
-        <div class="flex justify-between text-sm text-gray-600 mb-2">
-          <span id="question-number">問題 1/6</span>
-          <span id="progress-text">16.7%</span>
-        </div>
-        <div class="progress-bar">
-          <div class="progress" style="width: 16.7%"></div>
-        </div>
-      </div>
+    <!-- Hidden form for FormSubmit -->
+    <form id="hidden-form" action="https://formsubmit.co/annihu@vtc.edu.hk" method="POST">
+        <input type="hidden" name="_subject" value="香港文化 MBTI 測試結果">
+        <input type="hidden" name="_next" value="https://yourgithubpages.com/thanks.html">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="program" id="form-program" value="">
+        <input type="hidden" name="mbti_type" id="form-mbti" value="">
+        <input type="hidden" name="timestamp" id="form-timestamp" value="">
+    </form>
 
-      <div id="question-container" class="mb-8">
-        <h3 id="question-text" class="text-xl md:text-2xl font-bold text-gray-800 mb-6"></h3>
-        <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-      </div>
+    <div class="max-w-3xl mx-auto quiz-container p-6 md:p-8">
+        <!-- Title Section -->
+        <div id="title-section" class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-black text-red-500 mb-2">香港文化 × MBTI 性格測試</h1>
+            <h2 class="text-xl md:text-2xl font-bold text-red-400 mb-6">測試你適合哪種香港傳統文化活動？</h2>
+            <p class="text-gray-600 mb-8">透過 5 道情境題，發掘最適合你性格的香港傳統文化體驗！</p>
+            <button id="start-btn" class="btn-primary text-white font-bold py-3 px-8 rounded-full text-lg">開始測試</button>
+        </div>
 
-      <div class="flex justify-between">
-        <button id="prev-btn" class="hidden text-red-500 font-medium py-2 px-4 rounded-lg border border-red-300 hover:bg-red-50">上一題</button>
-        <button id="next-btn" class="btn-primary text-white font-bold py-2 px-6 rounded-lg ml-auto">下一題</button>
-      </div>
+        <!-- Quiz Section -->
+        <div id="quiz-section" class="hidden">
+            <div class="mb-6">
+                <div class="flex justify-between text-sm text-gray-600 mb-2">
+                    <span id="question-number">問題 1/6</span>
+                    <span id="progress-text">16.7%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress" style="width: 16.7%"></div>
+                </div>
+            </div>
+
+            <div id="question-container" class="mb-8">
+                <h3 id="question-text" class="text-xl md:text-2xl font-bold text-gray-800 mb-6"></h3>
+                <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+
+            <div class="flex justify-between">
+                <button id="prev-btn" class="hidden text-red-500 font-medium py-2 px-4 rounded-lg border border-red-300 hover:bg-red-50">上一題</button>
+                <button id="next-btn" class="btn-primary text-white font-bold py-2 px-6 rounded-lg ml-auto">下一題</button>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results-section" class="hidden">
+            <h2 class="text-2xl md:text-3xl font-bold text-red-500 mb-2 text-center">你的測試結果</h2>
+            <p class="text-center text-gray-500 mb-6">測試結果只供參考</p>
+            
+            <div class="result-card bg-white p-6 mb-8">
+                <div class="flex flex-col md:flex-row items-center mb-6">
+                    <div class="bg-red-100 rounded-full p-4 mb-4 md:mb-0 md:mr-6">
+                        <div id="result-icon" class="text-4xl"></div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800" id="mbti-type"></h3>
+                        <p class="text-lg font-medium text-red-500" id="mbti-name"></p>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h4 class="font-bold text-gray-700 mb-2">你的性格特質：</h4>
+                    <p id="mbti-description" class="text-gray-600"></p>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-gray-700 mb-2">最適合你的香港傳統文化體驗：</h4>
+                    <div class="bg-red-50 p-4 rounded-lg">
+                        <h5 id="culture-name" class="font-bold text-red-600 mb-2"></h5>
+                        <p id="culture-description" class="text-gray-600"></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center relative">
+                <button id="restart-btn" class="btn-primary text-white font-bold py-3 px-8 rounded-full text-lg mb-6">重新測試</button>
+                
+                <div class="relative inline-block">
+                    <button id="share-btn" class="flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-lg share-btn">
+                        <i class="fas fa-share-alt mr-2"></i> 分享結果
+                    </button>
+                    <div id="copy-tooltip" class="tooltip">已複製網址！</div>
+                </div>
+            </div>
+        </div>
     </div>
-    <!-- Results Section -->
-    <div id="results-section" class="hidden">
-      <h2 class="text-2xl md:text-3xl font-bold text-red-500 mb-2 text-center">你的測試結果</h2>
-      <p class="text-center text-gray-500 mb-6">測試結果只供參考</p>
 
-      <div class="result-card bg-white p-6 mb-8">
-        <div class="flex flex-col md:flex-row items-center mb-6">
-          <div class="bg-red-100 rounded-full p-4 mb-4 md:mb-0 md:mr-6">
-            <div id="result-icon" class="text-4xl"></div>
-          </div>
-          <div>
-            <h3 class="text-xl font-bold text-gray-800" id="mbti-type"></h3>
-            <p class="text-lg font-medium text-red-500" id="mbti-name"></p>
-          </div>
-        </div>
+    <script>
+        // MBTI Data
+        const mbtiData = {
+            "ENFJ": {
+                name: "導師",
+                description: "你擁有強大的領導力和激勵他人的能力，善於幫助他人發揮潛能。",
+                culture: "盂蘭勝會福物競投",
+                cultureDesc: "盂蘭勝會中的福物競投活動需要領導力和激勵他人的能力，你可以組織團隊參與競投，為社區帶來祝福。",
+                icon: "👑"
+            },
+            "ENFP": {
+                name: "活動家",
+                description: "你創意奔放，熱愛社交，總能為周圍的人帶來歡樂和新鮮感。",
+                culture: "長洲太平清醮（飄色）",
+                cultureDesc: "長洲太平清醮的飄色活動充滿創意和表演元素，你的活力和創意思維在這裡可以得到充分發揮。",
+                icon: "🎭"
+            },
+            "ENTJ": {
+                name: "指揮官",
+                description: "你果斷堅定，擅長制定策略，天生的領導者。",
+                culture: "詠春武術",
+                cultureDesc: "詠春武術需要堅定的意志和策略思維，你的果斷性格和領導能力使你能夠在這門武術中有出色表現。",
+                icon: "⚔️"
+            },
+            "ENTP": {
+                name: "辯論家",
+                description: "你充滿好奇心，喜歡挑戰常規，善於辯論和提出新想法。",
+                culture: "大坑舞火龍",
+                cultureDesc: "大坑舞火龍充滿活力和挑戰性，你的冒險精神和創新思維使你能夠欣賞並參與這項傳統活動。",
+                icon: "🔥"
+            },
+            "ESFJ": {
+                name: "執政官",
+                description: "你關心他人，重視傳統和社會責任，是社區中的支柱。",
+                culture: "圍村盆菜",
+                cultureDesc: "圍村盆菜體現了社區團結和傳統價值，你的關懷特質和對傳統的尊重使你能夠深刻體會其中的文化意義。",
+                icon: "🍲"
+            },
+            "ESFP": {
+                name: "表演者",
+                description: "你活力四射，享受當下，喜歡成為關注的焦點。",
+                culture: "天后誕飄色巡遊",
+                cultureDesc: "天后誕飄色巡遊充滿表演元素和歡樂氣氛，你的活力和表演天賦使你能夠在這項活動中閃耀光芒。",
+                icon: "🎪"
+            },
+            "ESTJ": {
+                name: "管理者",
+                description: "你務實可靠，擅長組織和執行，重視秩序和效率。",
+                culture: "客家舞麒麟",
+                cultureDesc: "客家舞麒麟需要嚴謹的組織和團隊協作，你的管理能力和務實作風使你能夠在這項傳統活動中扮演重要角色。",
+                icon: "📋"
+            },
+            "ESTP": {
+                name: "企業家",
+                description: "你充滿冒險精神，行動力強，善於把握機會。",
+                culture: "龍舟競渡",
+                cultureDesc: "龍舟競渡需要團隊合作和強大的行動力，你的冒險精神和果斷決策能力使你成為龍舟隊伍中的重要一員。",
+                icon: "🚣"
+            },
+            "INFJ": {
+                name: "提倡者",
+                description: "你富有理想主義，洞察力深，關注人類福祉和精神成長。",
+                culture: "粵劇",
+                cultureDesc: "粵劇蘊含豐富的情感和哲理，你的深度思考和對人性的洞察使你能夠欣賞並理解這門藝術的精髓。",
+                icon: "🎭"
+            },
+            "INFP": {
+                name: "調停者",
+                description: "你富有詩意，追求和諧，重視個人價值和內心平靜。",
+                culture: "涼茶二十四味",
+                cultureDesc: "涼茶文化體現了中醫的平衡哲學，你的和諧追求和對內在平靜的重視使你能夠欣賞這種傳統養生智慧。",
+                icon: "🍵"
+            },
+            "INTJ": {
+                name: "建築師",
+                description: "你擅長戰略思考，獨立自主，追求知識和效率。",
+                culture: "風水研究",
+                cultureDesc: "風水研究需要深度思考和系統分析，你的戰略思維和對知識的追求使你能夠理解並欣賞這門古老智慧。",
+                icon: "🧭"
+            },
+            "INTP": {
+                name: "邏輯學家",
+                description: "你分析力強，熱愛知識，善於發現問題的核心。",
+                culture: "九龍皇帝書法",
+                cultureDesc: "九龍皇帝書法充滿哲理和獨特視角，你的分析能力和對知識的熱愛使你能夠欣賞其中的深層含義。",
+                icon: "✒️"
+            },
+            "ISFJ": {
+                name: "守護者",
+                description: "你忠誠細心，樂於服務他人，重視穩定和傳統。",
+                culture: "戲棚搭建",
+                cultureDesc: "戲棚搭建需要細心和團隊合作，你的耐心和對細節的關注使你能夠欣賞並參與這項傳統工藝。",
+                icon: "🏗️"
+            },
+            "ISFP": {
+                name: "藝術家",
+                description: "你美學敏感，自由靈魂，享受當下的美好。",
+                culture: "霓虹招牌手繪",
+                cultureDesc: "霓虹招牌手繪是香港獨特的視覺藝術，你的美學敏感和創意表達使你能夠欣賞並可能參與這項傳統工藝。",
+                icon: "🎨"
+            },
+            "ISTJ": {
+                name: "物流師",
+                description: "你嚴謹可靠，注重細節，尊重傳統和規則。",
+                culture: "黃大仙簽文解卦",
+                cultureDesc: "黃大仙簽文解卦需要嚴謹和對傳統的尊重，你的可靠性和對細節的關注使你能夠理解並欣賞這項傳統活動。",
+                icon: "🔮"
+            },
+            "ISTP": {
+                name: "鑒賞家",
+                description: "你動手能力強，靈活應變，善於解決實際問題。",
+                culture: "花牌紮作",
+                cultureDesc: "花牌紮作需要精湛的手工技藝和實際解決問題的能力，你的動手能力和靈活思維使你能夠欣賞並學習這門傳統工藝。",
+                icon: "🧶"
+            }
+        };
 
-        <div class="mb-6">
-          <h4 class="font-bold text-gray-700 mb-2">你的性格特質：</h4>
-          <p id="mbti-description" class="text-gray-600"></p>
-        </div>
+        // Quiz questions
+        const questions = [
+            {
+                question: "你就讀哪個學科？",
+                options: [
+                    { text: "FD-BA", program: "FD-BA" },
+                    { text: "FD-ENG", program: "FD-ENG" },
+                    { text: "FD-HT", program: "FD-HT" },
+                    { text: "HD-BA", program: "HD-BA" },
+                    { text: "HD-ENG", program: "HD-ENG" },
+                    { text: "HD-HT", program: "HD-HT" }
+                ]
+            },
+            {
+                question: "在一個週末，你最想怎麼度過？",
+                options: [
+                    { text: "參加社交活動，認識新朋友", scores: { E: 2, S: 0, T: 0, J: 0 } },
+                    { text: "與幾個好友共度悠閒時光", scores: { I: 1, S: 1, F: 1, P: 0 } },
+                    { text: "獨自探索一個新地方", scores: { I: 2, N: 1, T: 0, P: 1 } },
+                    { text: "在家研究一個有趣的主題", scores: { I: 2, N: 1, T: 1, J: 0 } }
+                ]
+            },
+            {
+                question: "面對團體項目，你通常會：",
+                options: [
+                    { text: "主動領導，分配任務", scores: { E: 1, S: 0, T: 1, J: 2 } },
+                    { text: "提供創意想法和靈感", scores: { E: 0, N: 2, T: 0, P: 1 } },
+                    { text: "確保團隊氣氛和諧", scores: { I: 0, S: 1, F: 2, J: 0 } },
+                    { text: "專注完成自己的部分", scores: { I: 1, S: 1, T: 1, J: 1 } }
+                ]
+            },
+            {
+                question: "當你需要做決定時，你更傾向於：",
+                options: [
+                    { text: "分析利弊，理性判斷", scores: { I: 0, S: 0, T: 2, J: 1 } },
+                    { text: "考慮對人的影響和感受", scores: { E: 0, S: 0, F: 2, J: 0 } },
+                    { text: "相信直覺，選擇感覺對的", scores: { I: 0, N: 1, F: 1, P: 2 } },
+                    { text: "收集足夠資訊再決定", scores: { I: 1, S: 1, T: 1, J: 1 } }
+                ]
+            },
+            {
+                question: "在傳統節慶中，你最被什麼吸引？",
+                options: [
+                    { text: "熱鬧的氣氛和人群", scores: { E: 2, S: 1, F: 1, P: 0 } },
+                    { text: "背後的歷史和文化意義", scores: { I: 1, N: 2, T: 1, J: 0 } },
+                    { text: "精緻的手工藝和技術", scores: { I: 1, S: 1, T: 1, J: 1 } },
+                    { text: "與親友共度的溫馨時刻", scores: { E: 1, S: 1, F: 2, J: 0 } }
+                ]
+            },
+            {
+                question: "如果你有一整天自由時間，你會：",
+                options: [
+                    { text: "按計劃參觀著名景點", scores: { E: 1, S: 1, T: 0, J: 2 } },
+                    { text: "隨意漫步，發現隱藏角落", scores: { I: 1, N: 1, F: 0, P: 2 } },
+                    { text: "參加當地工作坊學習新技能", scores: { E: 0, S: 1, T: 1, J: 1 } },
+                    { text: "尋找特色美食和文化體驗", scores: { E: 1, N: 1, F: 1, P: 1 } }
+                ]
+            }
+        ];
 
-        <div>
-          <h4 class="font-bold text-gray-700 mb-2">最適合你的香港傳統文化體驗：</h4>
-          <div class="bg-red-50 p-4 rounded-lg">
-            <h5 id="culture-name" class="font-bold text-red-600 mb-2"></h5>
-            <p id="culture-description" class="text-gray-600"></p>
-          </div>
-        </div>
-      </div>
+        // Variables to track quiz state
+        let currentQuestion = 0;
+        let userScores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+        let userAnswers = [];
+        let userProgram = "";
+        let userMbtiType = "";
 
-      <div class="text-center relative">
-        <button id="restart-btn" class="btn-primary text-white font-bold py-3 px-8 rounded-full text-lg mb-6">重新測試</button>
+        // DOM Elements
+        const titleSection = document.getElementById('title-section');
+        const quizSection = document.getElementById('quiz-section');
+        const resultsSection = document.getElementById('results-section');
+        const startBtn = document.getElementById('start-btn');
+        const questionNumber = document.getElementById('question-number');
+        const progressText = document.getElementById('progress-text');
+        const progressBar = document.querySelector('.progress');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const shareBtn = document.getElementById('share-btn');
+        const copyTooltip = document.getElementById('copy-tooltip');
+        const hiddenForm = document.getElementById('hidden-form');
 
-        <div class="relative inline-block">
-          <button id="share-btn" class="flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-lg share-btn">
-            <i class="fas fa-share-alt mr-2"></i> 分享結果
-          </button>
-          <div id="copy-tooltip" class="tooltip">已複製網址！</div>
-        </div>
-      </div>
-    </div>
-<script>
-  function recordUserData(program, mbtiType) {
-    // 將資料寫入隱藏欄位並提交表單
-    const form = document.createElement("form");
-    form.action = "https://formsubmit.co/annihu@vtc.edu.hk";
-    form.method = "POST";
+        // Event Listeners
+        startBtn.addEventListener('click', startQuiz);
+        prevBtn.addEventListener('click', showPreviousQuestion);
+        nextBtn.addEventListener('click', handleNextButton);
+        restartBtn.addEventListener('click', restartQuiz);
+        shareBtn.addEventListener('click', copyUrlToClipboard);
 
-    const inputProgram = document.createElement("input");
-    inputProgram.type = "hidden";
-    inputProgram.name = "program";
-    inputProgram.value = program;
+        // Functions
+        function startQuiz() {
+            titleSection.classList.add('hidden');
+            quizSection.classList.remove('hidden');
+            showQuestion(0);
+        }
 
-    const inputMbti = document.createElement("input");
-    inputMbti.type = "hidden";
-    inputMbti.name = "mbtiType";
-    inputMbti.value = mbtiType;
+        function showQuestion(index) {
+            currentQuestion = index;
+            
+            // Update question number and progress
+            questionNumber.textContent = `問題 ${index + 1}/6`;
+            const progress = ((index + 1) / questions.length) * 100;
+            progressText.textContent = `${progress.toFixed(1)}%`;
+            progressBar.style.width = `${progress}%`;
+            
+            // Show/hide prev button
+            if (index === 0) {
+                prevBtn.classList.add('hidden');
+            } else {
+                prevBtn.classList.remove('hidden');
+            }
+            
+            // Update next button text
+            if (index === questions.length - 1) {
+                nextBtn.textContent = '查看結果';
+            } else {
+                nextBtn.textContent = '下一題';
+            }
+            
+            // Display question and options
+            const question = questions[index];
+            questionText.textContent = question.question;
+            
+            optionsContainer.innerHTML = '';
+            
+            // Adjust grid for program question (first question)
+            if (index === 0) {
+                optionsContainer.className = 'grid grid-cols-2 md:grid-cols-3 gap-4';
+            } else {
+                optionsContainer.className = 'grid grid-cols-1 md:grid-cols-2 gap-4';
+            }
+            
+            question.options.forEach((option, optionIndex) => {
+                const optionCard = document.createElement('div');
+                optionCard.className = 'option-card p-4 rounded-lg bg-white cursor-pointer';
+                if (userAnswers[index] === optionIndex) {
+                    optionCard.classList.add('selected');
+                }
+                
+                optionCard.innerHTML = `
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 rounded-full border-2 border-red-400 flex items-center justify-center mr-3">
+                            ${userAnswers[index] === optionIndex ? '<div class="w-3 h-3 bg-red-500 rounded-full"></div>' : ''}
+                        </div>
+                        <span>${option.text}</span>
+                    </div>
+                `;
+                
+                optionCard.addEventListener('click', () => selectOption(optionIndex));
+                optionsContainer.appendChild(optionCard);
+            });
+        }
 
-    form.appendChild(inputProgram);
-    form.appendChild(inputMbti);
-    document.body.appendChild(form);
-    form.submit();
-  }
+        function selectOption(optionIndex) {
+            userAnswers[currentQuestion] = optionIndex;
+            
+            // If this is the first question (program selection), store the program
+            if (currentQuestion === 0) {
+                userProgram = questions[0].options[optionIndex].program;
+            }
+            
+            // Update selected option visually
+            const options = optionsContainer.querySelectorAll('.option-card');
+            options.forEach((option, index) => {
+                const radioCircle = option.querySelector('.w-6');
+                if (index === optionIndex) {
+                    option.classList.add('selected');
+                    radioCircle.innerHTML = '<div class="w-3 h-3 bg-red-500 rounded-full"></div>';
+                } else {
+                    option.classList.remove('selected');
+                    radioCircle.innerHTML = '';
+                }
+            });
+        }
 
-  function copyUrlToClipboard() {
-    const url = window.location.href;
-    navigator.clipboard.writeText(url).then(() => {
-      const tooltip = document.getElementById("copy-tooltip");
-      tooltip.style.opacity = "1";
-      setTimeout(() => {
-        tooltip.style.opacity = "0";
-      }, 2000);
-    }).catch(err => {
-      console.error("複製失敗", err);
-    });
-  }
+        function showPreviousQuestion() {
+            if (currentQuestion > 0) {
+                showQuestion(currentQuestion - 1);
+            }
+        }
 
-</script>
+        function handleNextButton() {
+            // If no option selected, prompt user
+            if (userAnswers[currentQuestion] === undefined) {
+                alert('請選擇一個選項再繼續');
+                return;
+            }
+            
+            // If last question, calculate results
+            if (currentQuestion === questions.length - 1) {
+                calculateResults();
+                return;
+            }
+            
+            // Otherwise show next question
+            showQuestion(currentQuestion + 1);
+        }
+
+        function calculateResults() {
+            // Reset scores
+            userScores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+            
+            // Calculate scores based on answers (skip first question which is about program)
+            for (let i = 1; i < userAnswers.length; i++) {
+                const answerIndex = userAnswers[i];
+                const selectedOption = questions[i].options[answerIndex];
+                for (const [trait, score] of Object.entries(selectedOption.scores)) {
+                    userScores[trait] += score;
+                }
+            }
+            
+            // Determine MBTI type
+            userMbtiType = [
+                userScores.E > userScores.I ? 'E' : 'I',
+                userScores.S > userScores.N ? 'S' : 'N',
+                userScores.T > userScores.F ? 'T' : 'F',
+                userScores.J > userScores.P ? 'J' : 'P'
+            ].join('');
+            
+            // Submit data to FormSubmit before showing results
+            submitDataToFormSubmit(userProgram, userMbtiType);
+            
+            showResults(userMbtiType);
+        }
+
+        function submitDataToFormSubmit(program, mbtiType) {
+            // Fill in the hidden form fields
+            document.getElementById('form-program').value = program;
+            document.getElementById('form-mbti').value = mbtiType;
+            document.getElementById('form-timestamp').value = new Date().toISOString();
+            
+            // Submit the form
+            hiddenForm.submit();
+        }
+
+        function showResults(mbtiType) {
+            quizSection.classList.add('hidden');
+            resultsSection.classList.remove('hidden');
+            
+            const mbtiInfo = mbtiData[mbtiType];
+            
+            document.getElementById('mbti-type').textContent = mbtiType;
+            document.getElementById('mbti-name').textContent = mbtiInfo.name;
+            document.getElementById('mbti-description').textContent = mbtiInfo.description;
+            document.getElementById('culture-name').textContent = mbtiInfo.culture;
+            document.getElementById('culture-description').textContent = mbtiInfo.cultureDesc;
+            document.getElementById('result-icon').textContent = mbtiInfo.icon;
+            
+            // Create confetti effect
+            createConfetti();
+        }
+
+        function createConfetti() {
+            const confettiColors = ['#ff6b6b', '#ffb8b8', '#ffd8d8', '#ff9e9e', '#ffecec'];
+            const container = document.querySelector('body');
+            
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = -10 + 'px';
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = Math.random() * 10 + 5 + 'px';
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                confetti.style.opacity = '1';
+                
+                container.appendChild(confetti);
+                
+                const duration = Math.random() * 3 + 2;
+                const rotation = Math.random() * 360;
+                
+                confetti.animate([
+                    { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+                    { transform: `translateY(100vh) rotate(${rotation}deg)`, opacity: 0 }
+                ], {
+                    duration: duration * 1000,
+                    easing: 'ease-out',
+                    fill: 'forwards'
+                });
+                
+                setTimeout(() => {
+                    confetti.remove();
+                }, duration * 1000);
+            }
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            userAnswers = [];
+            userProgram = "";
+            userMbtiType = "";
+            resultsSection.classList.add('hidden');
+            titleSection.classList.remove('hidden');
+        }
+        
+        function copyUrlToClipboard() {
+            // Create a URL with the MBTI result as a parameter
+            const baseUrl = window.location.href.split('?')[0];
+            const shareUrl = `${baseUrl}?mbti=${userMbtiType}&program=${userProgram}`;
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                // Show tooltip
+                copyTooltip.style.opacity = '1';
+                
+                // Hide tooltip after 2 seconds
+                setTimeout(() => {
+                    copyTooltip.style.opacity = '0';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                alert('無法複製網址，請手動複製瀏覽器地址欄。');
+            });
+        }
+        
+        // Check if there's a result in the URL (for when someone opens a shared link)
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const mbtiParam = urlParams.get('mbti');
+            const programParam = urlParams.get('program');
+            
+            if (mbtiParam && mbtiData[mbtiParam]) {
+                userMbtiType = mbtiParam;
+                userProgram = programParam || "";
+                showResults(mbtiParam);
+            }
+        });
+
+        // Google Form 的提交 URL
+        const GOOGLE_FORM_ACTION_URL = 'https://docs.google.com/forms/u/0/d/e/12nk0OeColMiBfeOlG3eQEe-sgMeL5veZEta7oYLT778/formResponse';
+        // 監聽「查看結果」按鈕點擊事件
+        document.getElementById('viewResultBtn').addEventListener('click', function() {
+        // TODO: 請將以下變數替換成你測試結果的實際值
+        const programValue = '你的測試節目結果';  // 例如：用戶選擇的文化活動結果
+        const mbtiValue = '你的MBTI結果';          // 例如：用戶的MBTI性格結果
+        const timestampValue = new Date().toISOString(); // 送出當下的時間
+
+        // 建立 FormData，對應 Google Form 的 entry ID
+        const formData = new FormData();
+        formData.append('entry.573486325', programValue);   // form-program
+        formData.append('entry.375727484', mbtiValue);      // form-mbti
+        formData.append('entry.1263229797', timestampValue);// form-timestamp
+
+        // 送出 POST 請求到 Google Form
+        fetch(GOOGLE_FORM_ACTION_URL, {
+        method: 'POST',
+        mode: 'no-cors', // 避免跨域錯誤，無法取得回應
+        body: formData
+        }).then(() => {
+        alert('資料已成功送出！');
+        }).catch(() => {
+        alert('資料送出失敗，請稍後再試。');
+        });
+      });
+ 
+    </script>
 </body>
 </html>
