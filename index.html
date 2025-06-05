@@ -134,41 +134,11 @@
             border-color: #333 transparent transparent transparent;
         }
 
-        /* Hide the form initially */
-        #hidden-form {
+        /* Hide the forms initially */
+        #hidden-form, #google-form {
             display: none;
         }
     </style>
-
-    <script>
-        function submitToGoogleForm() {
-            // Collect data from your form or application
-            var program = document.getElementById('program').value;
-            var mbti = document.getElementById('mbti').value;
-            var timestamp = new Date().toISOString();
-
-            // Create a form data object
-            var formData = new FormData();
-            formData.append('entry.573486325', program);
-            formData.append('entry.375727484', mbti);
-            formData.append('entry.1263229797', timestamp);
-
-            // Send the data to Google Form
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', 'https://docs.google.com/forms/u/0/d/e/12nk0OeColMiBfeOlG3eQEe-sgMeL5veZEta7oYLT778/formResponse', true);
-            xhr.setRequestHeader('Accept', 'application/xml, text/xml, */*; q=0.01');
-            xhr.send(formData);
-
-            // Optionally, handle the response or update the UI
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    console.log('Data submitted successfully');
-                } else {
-                    console.error('Error submitting data');
-                }
-            };
-        }
-    </script>
 </head>
 <body class="min-h-screen py-8 px-4">
     <!-- Hong Kong Cultural Background Elements -->
@@ -315,6 +285,13 @@
         <input type="hidden" name="program" id="form-program" value="">
         <input type="hidden" name="mbti_type" id="form-mbti" value="">
         <input type="hidden" name="timestamp" id="form-timestamp" value="">
+    </form>
+
+    <!-- Hidden form for Google Form -->
+    <form id="google-form" action="https://docs.google.com/forms/u/0/d/e/12nk0OeColMiBfeOlG3eQEe-sgMeL5veZEta7oYLT778/formResponse" method="POST">
+        <input type="hidden" name="entry.573486325" id="google-form-program" value="">
+        <input type="hidden" name="entry.375727484" id="google-form-mbti" value="">
+        <input type="hidden" name="entry.1263229797" id="google-form-timestamp" value="">
     </form>
 
     <div class="max-w-3xl mx-auto quiz-container p-6 md:p-8">
@@ -592,6 +569,7 @@
         const shareBtn = document.getElementById('share-btn');
         const copyTooltip = document.getElementById('copy-tooltip');
         const hiddenForm = document.getElementById('hidden-form');
+        const googleForm = document.getElementById('google-form');
 
         // Event Listeners
         startBtn.addEventListener('click', startQuiz);
@@ -730,20 +708,55 @@
                 userScores.J > userScores.P ? 'J' : 'P'
             ].join('');
             
-            // Submit data to FormSubmit before showing results
-            submitDataToFormSubmit(userProgram, userMbtiType);
+            // Submit data to both forms before showing results
+            submitDataToForms(userProgram, userMbtiType);
             
             showResults(userMbtiType);
         }
 
-        function submitDataToFormSubmit(program, mbtiType) {
-            // Fill in the hidden form fields
+        function submitDataToForms(program, mbtiType) {
+            const timestamp = new Date().toISOString();
+            
+            // Fill in the FormSubmit form fields
             document.getElementById('form-program').value = program;
             document.getElementById('form-mbti').value = mbtiType;
-            document.getElementById('form-timestamp').value = new Date().toISOString();
+            document.getElementById('form-timestamp').value = timestamp;
             
-            // Submit the form
+            // Fill in the Google Form fields
+            document.getElementById('google-form-program').value = program;
+            document.getElementById('google-form-mbti').value = mbtiType;
+            document.getElementById('google-form-timestamp').value = timestamp;
+            
+            // Submit to Google Form first (silently in the background)
+            submitToGoogleForm();
+            
+            // Then submit to FormSubmit (this might redirect the page)
             hiddenForm.submit();
+        }
+
+        function submitToGoogleForm() {
+            try {
+                // Create a temporary iframe to submit the Google Form without redirecting
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.name = 'google-form-target';
+                document.body.appendChild(iframe);
+                
+                // Set the target of the form to the iframe
+                googleForm.target = 'google-form-target';
+                
+                // Submit the form
+                googleForm.submit();
+                
+                // Remove the iframe after a delay
+                setTimeout(() => {
+                    document.body.removeChild(iframe);
+                }, 5000);
+                
+                console.log('Data submitted to Google Form successfully');
+            } catch (error) {
+                console.error('Error submitting to Google Form:', error);
+            }
         }
 
         function showResults(mbtiType) {
@@ -840,14 +853,5 @@
             }
         });
     </script>
-
-     <form id="myForm">
-        <label for="program">Program:</label>
-        <input type="text" id="program" name="program"><br><br>
-        <label for="mbti">MBTI:</label>
-        <input type="text" id="mbti" name="mbti"><br><br>
-        <button type="button" onclick="submitToGoogleForm()">查看結果</button>
-    </form>
-    
 </body>
 </html>
