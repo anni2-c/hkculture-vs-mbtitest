@@ -278,7 +278,7 @@
     </div>
 
     <!-- Hidden form for FormSubmit -->
-    <form id="hidden-form" action="https://formsubmit.co/annihu@vtc.edu.hk" method="POST">
+    <form id="hidden-form" action="https://formsubmit.co/annihu@vtc.edu.hk" method="POST" target="_self">
         <input type="hidden" name="_subject" value="香港文化 MBTI 測試結果">
         <input type="hidden" name="_next" value="">
         <input type="hidden" name="_captcha" value="false">
@@ -286,6 +286,31 @@
         <input type="hidden" name="mbti_type" id="form-mbti" value="">
         <input type="hidden" name="timestamp" id="form-timestamp" value="">
     </form>
+
+    document.getElementById('hidden-form').addEventListener('submit', function(e) {
+        e.preventDefault(); // 阻止默认表单提交行为
+
+        // 获取表单数据
+        const formData = new FormData(this);
+
+        // 使用fetch API异步提交数据
+       fetch(this.action, {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Form submission failed');
+            }
+    }).then(data => {
+        console.log('Form submitted successfully:', data);
+        // 在此处添加结果提示逻辑，例如显示成功消息或更新页面内容
+    }).catch(error => {
+        console.error('Error submitting form:', error);
+        alert('表单提交失败，请稍后重试。');
+    });
+});
 
     <!-- Hidden form for Google Form -->
     <form id="google-form" action="https://docs.google.com/forms/d/e/1FAIpQLSeDSTy5CNytRWlAjzfXi2X0W_uhRsFnyWxE--g26sFXMnoCXw/formResponse" method="POST">
