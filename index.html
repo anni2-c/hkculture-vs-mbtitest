@@ -278,13 +278,12 @@
     </div>
 
     <!-- Hidden form for FormSubmit -->
-    <form id="hidden-form" action="https://formsubmit.co/annihu@vtc.edu.hk" method="POST" target="_self">
-        <input type="hidden" name="_subject" value="香港文化 MBTI 測試結果">
-        <input type="hidden" name="_next" value="">
-        <input type="hidden" name="_captcha" value="false">
-        <input type="hidden" name="program" id="form-program" value="">
-        <input type="hidden" name="mbti_type" id="form-mbti" value="">
-        <input type="hidden" name="timestamp" id="form-timestamp" value="">
+    <form id="hidden-form" action="https://formsubmit.co/annihu@vtc.edu.hk" method="POST" style="display:none;">
+        <input type="hidden" name="_subject" value="香港文化 MBTI 測試結果" />
+        <input type="hidden" name="_captcha" value="false" />
+        <input type="hidden" name="program" id="form-program" value="" />
+        <input type="hidden" name="mbti_type" id="form-mbti" value="" />
+        <input type="hidden" name="timestamp" id="form-timestamp" value="" />
     </form>
 
     <!-- Hidden form for Google Form -->
@@ -730,26 +729,22 @@
             // Submit to Google Form first (silently in the background)
             submitToGoogleForm();
             
-	// Submit FormSubmit using Fetch API
-	const formData = new FormData(hiddenForm);
-		fetch(hiddenForm.action, {
+            // Then submit to FormSubmit (this might redirect the page)
+            //hiddenForm.submit();
+		// 用 fetch 送出資料，不會跳轉
+		fetch(form.action, {
 			method: 'POST',
-			body: formData,
-		})
-		.then(response => {
-			if (response.ok) {
-				console.log('Data submitted to FormSubmit successfully');
-            // Keep the user on the results page
-			} else {
-				console.error('Error submitting to FormSubmit:', response.statusText);
-			}
-		})
-			.catch(error => {
-				console.error('Error submitting to FormSubmit:', error);
-			});
-	}
-		
+			mode: 'no-cors',
+			body: formData
+		}).then(() => {
+			alert('資料已成功送出！');
+		}).catch(() => {
+			alert('資料送出失敗，請稍後再試。');
+		});
+        }
 
+        function submitToGoogleForm() {
+            try {
                 // Create a temporary iframe to submit the Google Form without redirecting
                 const iframe = document.createElement('iframe');
                 iframe.style.display = 'none';
