@@ -732,16 +732,19 @@
             // Then submit to FormSubmit (this might redirect the page)
             //hiddenForm.submit();
 		// 用 fetch 送出資料，不會跳轉
-		fetch(form.action, {
+		fetch(document.getElementById('hidden-form').action, {
 			method: 'POST',
-			mode: 'no-cors',
-			body: formData
-		}).then(() => {
-			alert('資料已成功送出！');
-		}).catch(() => {
-			alert('資料送出失敗，請稍後再試。');
+			body: new FormData(document.getElementById('hidden-form'))
+		}).then(response => {
+			if (!response.ok) {
+				throw new Error('Form submission failed');
+			}
+			console.log('Form submitted successfully');
+		}).catch(error => {
+			console.error('Error submitting form:', error);
+			alert('表单提交失败，请稍后重试。');
 		});
-        }
+	}
 
         function submitToGoogleForm() {
             try {
