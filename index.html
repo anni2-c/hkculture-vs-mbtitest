@@ -289,13 +289,22 @@
 
 	<script>
 		document.getElementById('hidden-form').addEventListener('submit', function(e) {
-			e.preventDefault();
+			e.preventDefault(); // 阻止默认表单提交行为
+			const formData = new FormData(this);
 			fetch(this.action, {
 				method: 'POST',
-				body: new FormData(this)
+				body: formData
 			}).then(response => {
-				console.log('表单提交成功');
-        // 可在此处添加提交成功提示
+				if (!response.ok) {
+					throw new Error('Form submission failed with status: ' + response.status);
+				}
+				return response.json(); // 如果需要处理返回的数据，则解析为 JSON
+			}).then(data => {
+				console.log('Form submitted successfully:', data);
+        // 在此处添加结果提示逻辑，例如显示成功消息或更新页面内容
+			}).catch(error => {
+				console.error('Error submitting form:', error);
+				alert('表单提交失败，请稍后重试。');
 			});
 		});
 	</script>
